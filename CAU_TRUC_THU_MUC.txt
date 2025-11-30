@@ -1,0 +1,68 @@
+CẤU TRÚC THỨ MỤC DỰ ÁN GREENMART
+==================================
+
+Do an Testing/
+│
+├── src/
+│   ├── trang/                          # Các trang giao diện
+│   │   ├── TrangChu.jsx               # Trang chủ - hiển thị sản phẩm, tìm kiếm, lọc
+│   │   ├── GioHang.jsx                # Trang giỏ hàng
+│   │   ├── ThanhToan.jsx              # Trang thanh toán
+│   │   ├── DangNhap.jsx               # Trang đăng nhập
+│   │   └── DangKy.jsx                 # Trang đăng ký
+│   │
+│   ├── thanh_phan/                     # Component nhỏ
+│   │   ├── TheSanPham.jsx             # Component thẻ sản phẩm
+│   │   └── NutBam.jsx                 # Component nút bấm tái sử dụng
+│   │
+│   ├── du_lieu/                        # Dữ liệu JSON
+│   │   └── danh_sach_san_pham.json    # Danh sách 3 sản phẩm mẫu
+│   │
+│   ├── tien_ich/                       # Logic để test Unit (QUAN TRỌNG)
+│   │   ├── tinh_toan.js               # Hàm tính tổng tiền, thuế, phí ship
+│   │   ├── kiem_tra_hop_le.js         # Hàm validate email, mật khẩu, SĐT
+│   │   ├── ho_tro_tim_kiem.js         # Hàm tìm kiếm, sắp xếp, lọc
+│   │   ├── luu_tru.js                 # Hàm lưu/đọc LocalStorage
+│   │   └── __tests__/                 # Unit tests
+│   │       ├── tinh_toan.test.js
+│   │       ├── kiem_tra_hop_le.test.js
+│   │       ├── ho_tro_tim_kiem.test.js
+│   │       └── luu_tru.test.js
+│   │
+│   ├── App.jsx                         # Component chính
+│   ├── main.jsx                        # Entry point
+│   └── index.css                      # CSS global
+│
+├── cypress/                            # E2E Tests với Cypress
+│   ├── e2e/
+│   │   ├── dang-ky-dang-nhap.cy.js   # Test đăng ký và đăng nhập
+│   │   ├── gio-hang.cy.js            # Test giỏ hàng
+│   │   └── tim-kiem-loc.cy.js        # Test tìm kiếm và lọc
+│   ├── support/
+│   │   ├── e2e.js
+│   │   └── commands.js
+│   └── config.js
+│
+├── public/                             # Static files
+│
+├── node_modules/                       # Dependencies (sẽ được tạo sau npm install)
+│
+├── package.json                        # Dependencies và scripts
+├── vite.config.js                      # Cấu hình Vite
+├── jest.config.js                      # Cấu hình Jest
+├── babel.config.js                     # Cấu hình Babel
+├── cypress.config.js                   # Cấu hình Cypress
+├── index.html                          # HTML entry point
+│
+├── README.md                           # Hướng dẫn tổng quan
+├── KE_HOACH_TEST.md                    # Kế hoạch test chi tiết cho 5 người
+├── HUONG_DAN_CAI_DAT.md               # Hướng dẫn cài đặt chi tiết
+├── CAU_TRUC_THU_MUC.txt               # File này
+└── .gitignore                          # Git ignore rules
+
+TỔNG QUAN:
+- Tất cả tên file, biến, hàm đều bằng TIẾNG VIỆT KHÔNG DẤU
+- Mục tiêu: 150 Test Cases
+- Unit Test: Jest (test các file trong src/tien_ich/)
+- E2E Test: Cypress (test UI/UX)
+
