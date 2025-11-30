@@ -41,7 +41,7 @@ function DoiMatKhau({ chuyenTrang }) {
     if (!thongTin.matKhauMoi || thongTin.matKhauMoi.length === 0) {
       loiMoi.matKhauMoi = 'Vui lòng nhập mật khẩu mới'
     } else {
-      const ketQua = kiemTraMatKhauHopLe(thongTin.matKhauMoi)
+      const ketQua = kiemTraMatKhau(thongTin.matKhauMoi)
       if (!ketQua.hopLe) {
         loiMoi.matKhauMoi = ketQua.thongBao
       }
@@ -65,7 +65,7 @@ function DoiMatKhau({ chuyenTrang }) {
 
     const danhSachTaiKhoan = docDanhSachTaiKhoan()
     const taiKhoan = danhSachTaiKhoan.find(tk => tk.email === nguoiDung.email)
-    
+
     if (!taiKhoan) {
       loiMoi.matKhauCu = 'Không tìm thấy tài khoản'
       setLoi(loiMoi)
@@ -85,17 +85,17 @@ function DoiMatKhau({ chuyenTrang }) {
         ...danhSachTaiKhoan[taiKhoanIndex],
         matKhau: thongTin.matKhauMoi
       }
-      
+
       // Lưu lại danh sách tài khoản
       localStorage.setItem('greenmart_tai_khoan', JSON.stringify(danhSachTaiKhoan))
-      
+
       setThongBao('Đổi mật khẩu thành công!')
       setThongTin({
         matKhauCu: '',
         matKhauMoi: '',
         xacNhanMatKhauMoi: ''
       })
-      
+
       setTimeout(() => {
         setThongBao('')
         chuyenTrang('trangChu')

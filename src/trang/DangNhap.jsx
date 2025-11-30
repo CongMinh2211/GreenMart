@@ -7,6 +7,7 @@ function DangNhap({ chuyenTrang, setNguoiDung }) {
   const [matKhau, setMatKhau] = useState('')
   const [loi, setLoi] = useState({})
   const [daDangNhap, setDaDangNhap] = useState(false)
+  const [hienMatKhau, setHienMatKhau] = useState(false)
 
   const handleDangNhap = (e) => {
     e.preventDefault()
@@ -30,7 +31,7 @@ function DangNhap({ chuyenTrang, setNguoiDung }) {
 
     // Kiểm tra tài khoản đã đăng ký
     const taiKhoan = kiemTraDangNhap(email, matKhau)
-    
+
     if (!taiKhoan) {
       loiMoi.email = 'Email hoặc mật khẩu không đúng. Vui lòng kiểm tra lại hoặc đăng ký tài khoản mới.'
       setLoi(loiMoi)
@@ -106,22 +107,40 @@ function DangNhap({ chuyenTrang, setNguoiDung }) {
 
         <div style={{ marginBottom: '1.5rem' }}>
           <label data-testid="label-mat-khau-dang-nhap">Mật khẩu *</label>
-          <input
-            data-testid="input-mat-khau-dang-nhap"
-            type="password"
-            value={matKhau}
-            onChange={(e) => {
-              setMatKhau(e.target.value)
-              if (loi.matKhau) setLoi(prev => ({ ...prev, matKhau: null }))
-            }}
-            style={{
-              width: '100%',
-              padding: '0.75rem',
-              marginTop: '0.5rem',
-              border: loi.matKhau ? '1px solid red' : '1px solid #ddd',
-              borderRadius: '4px'
-            }}
-          />
+          <div style={{ position: 'relative', marginTop: '0.5rem' }}>
+            <input
+              data-testid="input-mat-khau-dang-nhap"
+              type={hienMatKhau ? "text" : "password"}
+              value={matKhau}
+              onChange={(e) => {
+                setMatKhau(e.target.value)
+                if (loi.matKhau) setLoi(prev => ({ ...prev, matKhau: null }))
+              }}
+              style={{
+                width: '100%',
+                padding: '0.75rem',
+                paddingRight: '2.5rem',
+                border: loi.matKhau ? '1px solid red' : '1px solid #ddd',
+                borderRadius: '4px'
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => setHienMatKhau(!hienMatKhau)}
+              style={{
+                position: 'absolute',
+                right: '10px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: '#666'
+              }}
+            >
+              <i className={hienMatKhau ? "fas fa-eye-slash" : "fas fa-eye"}></i>
+            </button>
+          </div>
           {loi.matKhau && (
             <p data-testid="loi-mat-khau-dang-nhap" style={{ color: 'red', fontSize: '0.9rem', marginTop: '0.25rem' }}>
               {loi.matKhau}

@@ -62,13 +62,13 @@ function ChiTietSanPham({ themVaoGioHang }) {
       <div className="row">
         {/* Hình ảnh sản phẩm */}
         <div className="col-md-6 mb-4">
-          <div className="position-relative">
+          <div className="position-relative" style={{ backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
             <img
               data-testid={`anh-san-pham-chi-tiet-${sanPham.id}`}
               src={sanPham.anh}
               alt={sanPham.ten}
-              className="img-fluid rounded shadow"
-              style={{ cursor: 'pointer', width: '100%', height: '500px', objectFit: 'cover' }}
+              className="img-fluid rounded shadow-sm"
+              style={{ cursor: 'pointer', width: '100%', height: '500px', objectFit: 'contain' }}
               onClick={() => setZoomAnh(true)}
             />
             <div className="position-absolute top-0 end-0 m-3">
@@ -77,7 +77,7 @@ function ChiTietSanPham({ themVaoGioHang }) {
               </span>
             </div>
           </div>
-          
+
           {/* Đánh giá */}
           <div className="mt-3 d-flex align-items-center">
             <div className="me-2">
@@ -94,7 +94,7 @@ function ChiTietSanPham({ themVaoGioHang }) {
           <h1 data-testid={`ten-san-pham-chi-tiet-${sanPham.id}`} className="mb-3 text-success">
             {sanPham.ten}
           </h1>
-          
+
           <div className="mb-3">
             <h2 className="text-danger fw-bold">
               {new Intl.NumberFormat('vi-VN').format(sanPham.gia)} đ
@@ -186,7 +186,7 @@ function ChiTietSanPham({ themVaoGioHang }) {
             </button>
             <button
               className="btn btn-outline-primary btn-lg"
-              onClick={() => chuyenTrang('gioHang')}
+              onClick={() => navigate('/gio-hang')}
             >
               <i className="fas fa-shopping-bag me-2"></i>
               Xem giỏ hàng
