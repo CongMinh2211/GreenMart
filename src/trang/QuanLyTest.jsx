@@ -9,24 +9,48 @@ function QuanLyTest() {
   const [locTrangThai, setLocTrangThai] = useState('tat-ca')
   const [locChucNang, setLocChucNang] = useState('tat-ca')
   const [timKiem, setTimKiem] = useState('')
+  const [showModal, setShowModal] = useState(false)
+  const [testCaseHienTai, setTestCaseHienTai] = useState(null)
+  const [formData, setFormData] = useState({
+    id: '',
+    ten: '',
+    moTa: '',
+    quyTrinh: '',
+    dieuKienTienQuyet: '',
+    input: '',
+    expected: '',
+    ketQuaThucTe: '',
+    nguoi: 'Người 1',
+    chucNang: 'Đăng ký & Đăng nhập',
+    loai: 'UI',
+    trangThai: 'chua-test',
+    ghiChu: ''
+  })
 
   useEffect(() => {
     // Đọc dữ liệu từ localStorage nếu có, nếu không dùng dữ liệu mặc định
     const duLieuLuu = docDanhSachTestCase()
-    // Nếu file JSON có nhiều test cases hơn localStorage, cập nhật từ file JSON
-    if (danhSachTestCase.length > (duLieuLuu?.length || 0)) {
+
+    // Logic cập nhật:
+    // 1. Nếu chưa có localStorage -> Dùng JSON
+    // 2. Nếu số lượng khác nhau -> Dùng JSON (để cập nhật thêm/bớt)
+    // 3. Nếu tên của test case đầu tiên khác nhau -> Dùng JSON (để cập nhật nội dung mới)
+    const canCapNhat = !duLieuLuu ||
+      duLieuLuu.length === 0 ||
+      danhSachTestCase.length !== duLieuLuu.length ||
+      (duLieuLuu[0] && danhSachTestCase[0] && duLieuLuu[0].ten !== danhSachTestCase[0].ten)
+
+    if (canCapNhat) {
       setTestCases(danhSachTestCase)
       luuDanhSachTestCase(danhSachTestCase)
-    } else if (duLieuLuu && duLieuLuu.length > 0) {
-      setTestCases(duLieuLuu)
+      console.log('Đã cập nhật dữ liệu mới từ file JSON')
     } else {
-      setTestCases(danhSachTestCase)
-      luuDanhSachTestCase(danhSachTestCase)
+      setTestCases(duLieuLuu)
     }
   }, [])
 
   const capNhatTrangThai = (id, trangThaiMoi) => {
-    const capNhat = testCases.map(tc => 
+    const capNhat = testCases.map(tc =>
       tc.id === id ? { ...tc, trangThai: trangThaiMoi } : tc
     )
     setTestCases(capNhat)
@@ -34,7 +58,7 @@ function QuanLyTest() {
   }
 
   const capNhatGhiChu = (id, ghiChu) => {
-    const capNhat = testCases.map(tc => 
+    const capNhat = testCases.map(tc =>
       tc.id === id ? { ...tc, ghiChu } : tc
     )
     setTestCases(capNhat)
@@ -46,11 +70,11 @@ function QuanLyTest() {
     const dungNguoi = locNguoi === 'tat-ca' || tc.nguoi === locNguoi
     const dungTrangThai = locTrangThai === 'tat-ca' || tc.trangThai === locTrangThai
     const dungChucNang = locChucNang === 'tat-ca' || tc.chucNang === locChucNang
-    const dungTimKiem = !timKiem || 
+    const dungTimKiem = !timKiem ||
       tc.id.toLowerCase().includes(timKiem.toLowerCase()) ||
       tc.ten.toLowerCase().includes(timKiem.toLowerCase()) ||
       tc.moTa.toLowerCase().includes(timKiem.toLowerCase())
-    
+
     return dungNguoi && dungTrangThai && dungChucNang && dungTimKiem
   })
 
@@ -67,10 +91,10 @@ function QuanLyTest() {
 
   const handleXuatExcel = () => {
     // Xuất tất cả hoặc chỉ các test case đã được test
-    const duLieuXuat = locTrangThai === 'tat-ca' 
-      ? testCasesLoc 
+    const duLieuXuat = locTrangThai === 'tat-ca'
+      ? testCasesLoc
       : testCasesLoc.filter(tc => tc.trangThai !== 'chua-test')
-    
+
     if (duLieuXuat.length === 0) {
       alert('Không có dữ liệu để xuất Excel!')
       return
@@ -85,6 +109,90 @@ function QuanLyTest() {
     setTestCases(danhSachTestCase)
     luuDanhSachTestCase(danhSachTestCase)
     alert(`Đã tải lại ${danhSachTestCase.length} test cases từ file JSON!`)
+  }
+
+  const handleThemMoi = () => {
+    setTestCaseHienTai(null)
+    setFormData({
+      id: '',
+      ten: '',
+      moTa: '',
+      quyTrinh: '',
+      dieuKienTienQuyet: '',
+      input: '',
+      expected: '',
+      ketQuaThucTe: '',
+      nguoi: 'Người 1',
+      chucNang: 'Đăng ký & Đăng nhập',
+      loai: 'UI',
+      trangThai: 'chua-test',
+      ghiChu: ''
+    })
+    setShowModal(true)
+  }
+
+  const handleSua = (tc) => {
+    setTestCaseHienTai(tc)
+    setFormData({
+      id: tc.id,
+      ten: tc.ten || '',
+      moTa: tc.moTa || '',
+      quyTrinh: tc.quyTrinh || '',
+      dieuKienTienQuyet: tc.dieuKienTienQuyet || '',
+      input: tc.input || '',
+      expected: tc.expected || '',
+      ketQuaThucTe: tc.ketQuaThucTe || '',
+      nguoi: tc.nguoi || 'Người 1',
+      chucNang: tc.chucNang || 'Đăng ký & Đăng nhập',
+      loai: tc.loai || 'UI',
+      trangThai: tc.trangThai || 'chua-test',
+      ghiChu: tc.ghiChu || ''
+    })
+    setShowModal(true)
+  }
+
+  const handleXoa = (id) => {
+    if (window.confirm('Bạn có chắc chắn muốn xóa test case này?')) {
+      const capNhat = testCases.filter(tc => tc.id !== id)
+      setTestCases(capNhat)
+      luuDanhSachTestCase(capNhat)
+      alert('Đã xóa test case thành công!')
+    }
+  }
+
+  const handleLuuTestCase = (e) => {
+    e.preventDefault()
+
+    if (!formData.id || !formData.ten) {
+      alert('Vui lòng nhập đầy đủ ID và Tên test case!')
+      return
+    }
+
+    // Kiểm tra ID trùng nếu là thêm mới
+    if (!testCaseHienTai && testCases.find(tc => tc.id === formData.id)) {
+      alert('ID test case đã tồn tại!')
+      return
+    }
+
+    const testCaseMoi = { ...formData }
+
+    if (testCaseHienTai) {
+      // Sửa
+      const capNhat = testCases.map(tc =>
+        tc.id === testCaseHienTai.id ? testCaseMoi : tc
+      )
+      setTestCases(capNhat)
+      luuDanhSachTestCase(capNhat)
+      alert('Đã cập nhật test case thành công!')
+    } else {
+      // Thêm mới
+      const capNhat = [...testCases, testCaseMoi]
+      setTestCases(capNhat)
+      luuDanhSachTestCase(capNhat)
+      alert('Đã thêm test case mới thành công!')
+    }
+
+    setShowModal(false)
   }
 
   return (
@@ -200,6 +308,22 @@ function QuanLyTest() {
         </div>
         <div style={{ textAlign: 'right', display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
           <button
+            data-testid="nut-them-test-case"
+            onClick={handleThemMoi}
+            style={{
+              padding: '0.75rem 1.5rem',
+              background: '#28a745',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              fontSize: '1rem'
+            }}
+          >
+            ➕ Thêm Test Case
+          </button>
+          <button
             data-testid="nut-tai-lai-tu-file"
             onClick={handleTaiLaiTuFile}
             style={{
@@ -247,17 +371,16 @@ function QuanLyTest() {
                 borderRadius: '8px',
                 marginBottom: '1rem',
                 boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                borderLeft: `4px solid ${
-                  tc.trangThai === 'pass' ? 'green' :
-                  tc.trangThai === 'fail' ? 'red' :
-                  tc.trangThai === 'skip' ? 'orange' : '#ddd'
-                }`
+                borderLeft: `4px solid ${tc.trangThai === 'pass' ? 'green' :
+                    tc.trangThai === 'fail' ? 'red' :
+                      tc.trangThai === 'skip' ? 'orange' : '#ddd'
+                  }`
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '1rem' }}>
                 <div style={{ flex: 1 }}>
                   <h3 style={{ marginBottom: '0.5rem', color: '#2d5016' }}>
-                    {tc.id}: {tc.ten}
+                    {tc.id}: {tc.moTa || tc.ten}
                   </h3>
                   <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
                     <span style={{ background: '#f0f0f0', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.9rem' }}>
@@ -270,11 +393,47 @@ function QuanLyTest() {
                       🏷️ {tc.loai}
                     </span>
                   </div>
-                  <p style={{ color: '#666', marginBottom: '0.5rem' }}><strong>Mô tả:</strong> {tc.moTa}</p>
-                  <p style={{ color: '#666', marginBottom: '0.5rem' }}><strong>Input:</strong> {tc.input}</p>
-                  <p style={{ color: '#666', marginBottom: '0.5rem' }}><strong>Expected:</strong> {tc.expected}</p>
+                  <p style={{ color: '#666', marginBottom: '0.5rem' }}><strong>Test chức năng gì:</strong> {tc.moTa || tc.ten}</p>
+                  <p style={{ color: '#666', marginBottom: '0.5rem' }}><strong>Input ra sao:</strong> {tc.input || 'Chưa có input'}</p>
+                  <p style={{ color: '#666', marginBottom: '0.5rem' }}><strong>Expected ra cái gì:</strong> {tc.expected || 'Chưa có expected'}</p>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', minWidth: '200px' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button
+                      data-testid={`nut-sua-${tc.id}`}
+                      onClick={() => handleSua(tc)}
+                      style={{
+                        flex: 1,
+                        padding: '0.5rem',
+                        background: '#ffc107',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        fontSize: '0.9rem'
+                      }}
+                    >
+                      ✏️ Sửa
+                    </button>
+                    <button
+                      data-testid={`nut-xoa-${tc.id}`}
+                      onClick={() => handleXoa(tc.id)}
+                      style={{
+                        flex: 1,
+                        padding: '0.5rem',
+                        background: '#dc3545',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        fontSize: '0.9rem'
+                      }}
+                    >
+                      🗑️ Xóa
+                    </button>
+                  </div>
                   <div>
                     <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.9rem' }}>Trạng thái:</label>
                     <select
@@ -287,8 +446,8 @@ function QuanLyTest() {
                         border: '1px solid #ddd',
                         borderRadius: '4px',
                         background: tc.trangThai === 'pass' ? '#C6EFCE' :
-                                   tc.trangThai === 'fail' ? '#FFC7CE' :
-                                   tc.trangThai === 'skip' ? '#FFEB9C' : 'white'
+                          tc.trangThai === 'fail' ? '#FFC7CE' :
+                            tc.trangThai === 'skip' ? '#FFEB9C' : 'white'
                       }}
                     >
                       <option value="chua-test">Chưa Test</option>
@@ -325,6 +484,199 @@ function QuanLyTest() {
           </div>
         )}
       </div>
+
+      {/* Modal Thêm/Sửa Test Case */}
+      {showModal && (
+        <div
+          data-testid="modal-test-case"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000
+          }}
+          onClick={() => setShowModal(false)}
+        >
+          <div
+            style={{
+              background: 'white',
+              padding: '2rem',
+              borderRadius: '8px',
+              maxWidth: '800px',
+              width: '90%',
+              maxHeight: '90vh',
+              overflow: 'auto'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 style={{ marginBottom: '1.5rem', color: '#2d5016' }}>
+              {testCaseHienTai ? 'Sửa Test Case' : 'Thêm Test Case Mới'}
+            </h2>
+
+            <form onSubmit={handleLuuTestCase}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                <div>
+                  <label>Test Case ID *</label>
+                  <input
+                    type="text"
+                    value={formData.id}
+                    onChange={(e) => setFormData({ ...formData, id: e.target.value })}
+                    disabled={!!testCaseHienTai}
+                    required
+                    style={{ width: '100%', padding: '0.5rem', marginTop: '0.25rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                  />
+                </div>
+                <div>
+                  <label>Tên Test Case *</label>
+                  <input
+                    type="text"
+                    value={formData.ten}
+                    onChange={(e) => setFormData({ ...formData, ten: e.target.value })}
+                    required
+                    style={{ width: '100%', padding: '0.5rem', marginTop: '0.25rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '1rem' }}>
+                <label>Mô tả</label>
+                <textarea
+                  value={formData.moTa}
+                  onChange={(e) => setFormData({ ...formData, moTa: e.target.value })}
+                  rows="3"
+                  style={{ width: '100%', padding: '0.5rem', marginTop: '0.25rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '1rem' }}>
+                <label>Quy trình</label>
+                <textarea
+                  value={formData.quyTrinh}
+                  onChange={(e) => setFormData({ ...formData, quyTrinh: e.target.value })}
+                  rows="3"
+                  style={{ width: '100%', padding: '0.5rem', marginTop: '0.25rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '1rem' }}>
+                <label>Điều kiện tiên quyết</label>
+                <textarea
+                  value={formData.dieuKienTienQuyet}
+                  onChange={(e) => setFormData({ ...formData, dieuKienTienQuyet: e.target.value })}
+                  rows="2"
+                  style={{ width: '100%', padding: '0.5rem', marginTop: '0.25rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                <div>
+                  <label>Input</label>
+                  <textarea
+                    value={formData.input}
+                    onChange={(e) => setFormData({ ...formData, input: e.target.value })}
+                    rows="3"
+                    style={{ width: '100%', padding: '0.5rem', marginTop: '0.25rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                  />
+                </div>
+                <div>
+                  <label>Kết quả mong đợi</label>
+                  <textarea
+                    value={formData.expected}
+                    onChange={(e) => setFormData({ ...formData, expected: e.target.value })}
+                    rows="3"
+                    style={{ width: '100%', padding: '0.5rem', marginTop: '0.25rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '1rem' }}>
+                <label>Kết quả thực tế</label>
+                <textarea
+                  value={formData.ketQuaThucTe}
+                  onChange={(e) => setFormData({ ...formData, ketQuaThucTe: e.target.value })}
+                  rows="2"
+                  style={{ width: '100%', padding: '0.5rem', marginTop: '0.25rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                <div>
+                  <label>Người Test</label>
+                  <select
+                    value={formData.nguoi}
+                    onChange={(e) => setFormData({ ...formData, nguoi: e.target.value })}
+                    style={{ width: '100%', padding: '0.5rem', marginTop: '0.25rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                  >
+                    <option value="Người 1">Người 1</option>
+                    <option value="Người 2">Người 2</option>
+                    <option value="Người 3">Người 3</option>
+                    <option value="Người 4">Người 4</option>
+                    <option value="Người 5">Người 5</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Chức năng</label>
+                  <input
+                    type="text"
+                    value={formData.chucNang}
+                    onChange={(e) => setFormData({ ...formData, chucNang: e.target.value })}
+                    style={{ width: '100%', padding: '0.5rem', marginTop: '0.25rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                  />
+                </div>
+                <div>
+                  <label>Loại Test</label>
+                  <select
+                    value={formData.loai}
+                    onChange={(e) => setFormData({ ...formData, loai: e.target.value })}
+                    style={{ width: '100%', padding: '0.5rem', marginTop: '0.25rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                  >
+                    <option value="UI">UI</option>
+                    <option value="UNIT">UNIT</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  style={{
+                    padding: '0.75rem 1.5rem',
+                    background: '#6c757d',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  style={{
+                    padding: '0.75rem 1.5rem',
+                    background: '#2d5016',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  {testCaseHienTai ? 'Cập nhật' : 'Thêm mới'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

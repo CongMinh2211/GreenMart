@@ -27,8 +27,8 @@ function TrangChu({ themVaoGioHang, chuyenTrang }) {
     }
 
     // Lọc theo giá
-    const giaMinNum = giaMin ? parseInt(giaMin) : 0
-    const giaMaxNum = giaMax ? parseInt(giaMax) : Infinity
+    const giaMinNum = giaMin ? parseInt(giaMin.replace(/\D/g, '')) : 0
+    const giaMaxNum = giaMax ? parseInt(giaMax.replace(/\D/g, '')) : Infinity
     ketQua = locTheoGia(ketQua, giaMinNum, giaMaxNum)
 
     // Sắp xếp
@@ -73,7 +73,7 @@ function TrangChu({ themVaoGioHang, chuyenTrang }) {
                 onChange={(e) => setTuKhoaTimKiem(e.target.value)}
               />
             </div>
-            
+
             <div className="col-md-3">
               <label className="form-label fw-bold">
                 <i className="fas fa-filter me-2"></i>Lọc theo loại
@@ -147,7 +147,7 @@ function TrangChu({ themVaoGioHang, chuyenTrang }) {
       {/* Danh sách sản phẩm */}
       {sanPhamHienThi.length > 0 ? (
         <>
-          <div 
+          <div
             data-testid="danh-sach-san-pham"
             className="row g-4"
           >
@@ -218,7 +218,7 @@ function TrangChu({ themVaoGioHang, chuyenTrang }) {
           )}
         </>
       ) : (
-        <div 
+        <div
           data-testid="thong-bao-khong-tim-thay"
           className="text-center py-5"
         >

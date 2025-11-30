@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { kiemTraEmail, kiemTraMatKhau } from '../tien_ich/kiem_tra_hop_le'
 import { kiemTraDangNhap, luuNguoiDung } from '../tien_ich/luu_tru'
 
-function DangNhap({ chuyenTrang }) {
+function DangNhap({ chuyenTrang, setNguoiDung }) {
   const [email, setEmail] = useState('')
   const [matKhau, setMatKhau] = useState('')
   const [loi, setLoi] = useState({})
@@ -38,15 +38,22 @@ function DangNhap({ chuyenTrang }) {
     }
 
     // Lưu thông tin người dùng đã đăng nhập
-    luuNguoiDung({
+    const thongTinNguoiDung = {
       email: taiKhoan.email,
       hoTen: taiKhoan.hoTen,
       soDienThoai: taiKhoan.soDienThoai
-    })
+    }
+    luuNguoiDung(thongTinNguoiDung)
+
+    // Cập nhật state trong App.jsx
+    if (setNguoiDung) {
+      setNguoiDung(thongTinNguoiDung)
+    }
 
     // Đăng nhập thành công
     setDaDangNhap(true)
     alert('Đăng nhập thành công!')
+    chuyenTrang('trangChu')
   }
 
   if (daDangNhap) {

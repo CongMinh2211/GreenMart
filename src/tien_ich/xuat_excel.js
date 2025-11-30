@@ -19,14 +19,17 @@ export async function xuatExcelTestCase(danhSachTestCase, tenFile = 'Bao_Cao_Tes
     // Chuẩn bị dữ liệu cho sheet
     const duLieu = danhSachTestCase.map((tc, index) => ({
       'STT': index + 1,
-      'Mã Test Case': tc.id,
+      'Test Case ID': tc.id,
+      'Mô tả': tc.moTa || '',
+      'Quy trình': tc.quyTrinh || '',
+      'Điều kiện tiên quyết': tc.dieuKienTienQuyet || '',
+      'Kết quả mong đợi': tc.expected || '',
+      'Kết quả thực tế': tc.ketQuaThucTe || '',
       'Tên Test Case': tc.ten,
       'Người Test': tc.nguoi,
       'Chức năng': tc.chucNang,
       'Loại Test': tc.loai,
-      'Mô tả': tc.moTa,
       'Input': tc.input,
-      'Expected': tc.expected,
       'Trạng thái': tc.trangThai === 'pass' ? 'PASS' : 
                     tc.trangThai === 'fail' ? 'FAIL' : 
                     tc.trangThai === 'skip' ? 'SKIP' : 'CHƯA TEST',
@@ -39,14 +42,17 @@ export async function xuatExcelTestCase(danhSachTestCase, tenFile = 'Bao_Cao_Tes
     // Đặt độ rộng cột
     ws['!cols'] = [
       { wch: 5 },   // STT
-      { wch: 15 },  // Mã Test Case
+      { wch: 15 },  // Test Case ID
+      { wch: 40 },  // Mô tả
+      { wch: 40 },  // Quy trình
+      { wch: 30 },  // Điều kiện tiên quyết
+      { wch: 40 },  // Kết quả mong đợi
+      { wch: 40 },  // Kết quả thực tế
       { wch: 40 },  // Tên Test Case
       { wch: 12 },  // Người Test
       { wch: 25 },  // Chức năng
       { wch: 12 },  // Loại Test
-      { wch: 30 },  // Mô tả
       { wch: 40 },  // Input
-      { wch: 40 },  // Expected
       { wch: 12 },  // Trạng thái
       { wch: 30 }   // Ghi chú
     ]
@@ -89,8 +95,8 @@ export async function xuatExcelTestCase(danhSachTestCase, tenFile = 'Bao_Cao_Tes
           }
         }
 
-        // Màu nền theo trạng thái (cột Trạng thái - cột 9)
-        if (C === 9) {
+        // Màu nền theo trạng thái (cột Trạng thái - cột 12)
+        if (C === 12) {
           const trangThai = ws[cellAddress].v
           if (trangThai === 'PASS') {
             ws[cellAddress].s.fill = { fgColor: { rgb: 'C6EFCE' } }
