@@ -22,9 +22,9 @@ export function timKiemSanPham(danhSachSanPham, tuKhoa) {
   return danhSachSanPham.filter(sanPham => {
     const tenChuanHoa = chuyenDoiKhongDau(sanPham.ten.toLowerCase())
     const loaiChuanHoa = chuyenDoiKhongDau((sanPham.loai || '').toLowerCase())
-    
-    return tenChuanHoa.includes(tuKhoaChuanHoa) || 
-           loaiChuanHoa.includes(tuKhoaChuanHoa)
+
+    return tenChuanHoa.includes(tuKhoaChuanHoa) ||
+      loaiChuanHoa.includes(tuKhoaChuanHoa)
   })
 }
 
@@ -86,24 +86,24 @@ export function sapXepSanPham(danhSachSanPham, tieuChi = 'gia-tang') {
   switch (tieuChi) {
     case 'gia-tang':
       return danhSachSaoChep.sort((a, b) => a.gia - b.gia)
-    
+
     case 'gia-giam':
       return danhSachSaoChep.sort((a, b) => b.gia - a.gia)
-    
+
     case 'ten-a-z':
       return danhSachSaoChep.sort((a, b) => {
         const tenA = chuyenDoiKhongDau(a.ten.toLowerCase())
         const tenB = chuyenDoiKhongDau(b.ten.toLowerCase())
         return tenA.localeCompare(tenB)
       })
-    
+
     case 'ten-z-a':
       return danhSachSaoChep.sort((a, b) => {
         const tenA = chuyenDoiKhongDau(a.ten.toLowerCase())
         const tenB = chuyenDoiKhongDau(b.ten.toLowerCase())
         return tenB.localeCompare(tenA)
       })
-    
+
     default:
       return danhSachSaoChep
   }
@@ -142,5 +142,50 @@ export function locTheoGia(danhSachSanPham, giaMin = 0, giaMax = Infinity) {
   return danhSachSanPham.filter(sanPham => {
     return sanPham.gia >= giaMin && sanPham.gia <= giaMax
   })
+}
+
+/**
+ * Tạo slug từ chuỗi (VD: "Táo Mỹ" -> "tao-my")
+ * @param {string} str - Chuỗi cần tạo slug
+ * @returns {string} - Slug
+ */
+export function taoSlug(str) {
+  if (!str) return ''
+  const khongDau = chuyenDoiKhongDau(str)
+  return khongDau.toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '') // Xóa ký tự đặc biệt
+    .replace(/\s+/g, '-')         // Thay khoảng trắng bằng -
+    .replace(/-+/g, '-')          // Xóa - dư thừa
+}
+
+/**
+ * Highlight từ khóa trong chuỗi
+ * @param {string} text - Chuỗi gốc
+ * @param {string} keyword - Từ khóa cần highlight
+ * @returns {string} - Chuỗi HTML có highlight
+ */
+export function highlight(text, keyword) {
+  if (!text) return ''
+  if (!keyword) return text
+
+  const regex = new RegExp(`(${keyword})`, 'gi')
+  return text.replace(regex, '<b>$1</b>')
+}
+
+/**
+ * Phân trang danh sách
+ * @param {Array} list - Danh sách gốc
+ * @param {number} page - Trang hiện tại (1-based)
+ * @param {number} limit - Số lượng item mỗi trang
+ * @returns {Array} - Danh sách item của trang đó
+ */
+export function phantrang(list, page = 1, limit = 10) {
+  if (!list || !Array.isArray(list)) return []
+  if (page < 1) page = 1
+
+  const start = (page - 1) * limit
+  const end = start + limit
+
+  return list.slice(start, end)
 }
 

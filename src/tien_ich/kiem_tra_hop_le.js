@@ -188,3 +188,50 @@ export function kiemTraTen(ten, doDaiToiThieu = 2) {
   }
 }
 
+/**
+ * Kiểm tra giá trị có bị để trống không
+ * @param {any} value - Giá trị cần kiểm tra
+ * @returns {boolean} - True nếu TRỐNG, False nếu CÓ DỮ LIỆU
+ */
+export function kiemTraTrong(value) {
+  if (value === null || value === undefined) return true
+  if (typeof value === 'string' && value.trim() === '') return true
+  return false
+}
+
+/**
+ * Validate toàn bộ form
+ * @param {Object} data - Object chứa dữ liệu form
+ * @returns {Object} - { isValid: boolean, errors: Object }
+ */
+export function validateForm(data) {
+  const errors = {}
+  let isValid = true
+
+  if (data.email !== undefined) {
+    const checkEmail = kiemTraEmail(data.email)
+    if (!checkEmail.hopLe) {
+      errors.email = checkEmail.thongBao
+      isValid = false
+    }
+  }
+
+  if (data.matKhau !== undefined) {
+    const checkPass = kiemTraMatKhau(data.matKhau)
+    if (!checkPass.hopLe) {
+      errors.matKhau = checkPass.thongBao
+      isValid = false
+    }
+  }
+
+  if (data.soDienThoai !== undefined) {
+    const checkSDT = kiemTraSoDienThoai(data.soDienThoai)
+    if (!checkSDT.hopLe) {
+      errors.soDienThoai = checkSDT.thongBao
+      isValid = false
+    }
+  }
+
+  return { isValid, errors }
+}
+

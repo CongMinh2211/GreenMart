@@ -119,19 +119,19 @@ export function luuDonHang(donHang) {
     if (!donHang || typeof donHang !== 'object') {
       return false
     }
-    
+
     // Đọc danh sách đơn hàng cũ
     const danhSachDonHang = docDanhSachDonHang()
-    
+
     // Thêm đơn hàng mới với ID và thời gian
     const donHangMoi = {
       ...donHang,
       id: Date.now().toString(),
       thoiGian: new Date().toISOString()
     }
-    
+
     danhSachDonHang.push(donHangMoi)
-    
+
     const chuoiJson = JSON.stringify(danhSachDonHang)
     localStorage.setItem(KEY_DON_HANG, chuoiJson)
     return true
@@ -218,16 +218,16 @@ export function luuTaiKhoan(taiKhoan) {
     if (!taiKhoan || typeof taiKhoan !== 'object' || !taiKhoan.email || !taiKhoan.matKhau) {
       return false
     }
-    
+
     // Đọc danh sách tài khoản cũ
     const danhSachTaiKhoan = docDanhSachTaiKhoan()
-    
+
     // Kiểm tra email đã tồn tại chưa
     const tonTai = danhSachTaiKhoan.find(tk => tk.email === taiKhoan.email)
     if (tonTai) {
       return false // Email đã tồn tại
     }
-    
+
     // Thêm tài khoản mới (không lưu mật khẩu dạng plain text, chỉ lưu hash đơn giản)
     const taiKhoanMoi = {
       email: taiKhoan.email,
@@ -236,7 +236,7 @@ export function luuTaiKhoan(taiKhoan) {
       soDienThoai: taiKhoan.soDienThoai,
       ngayDangKy: new Date().toISOString()
     }
-    
+
     danhSachTaiKhoan.push(taiKhoanMoi)
     const chuoiJson = JSON.stringify(danhSachTaiKhoan)
     localStorage.setItem(KEY_TAI_KHOAN, chuoiJson)
@@ -281,4 +281,46 @@ export function kiemTraDangNhap(email, matKhau) {
     return null
   }
 }
+
+/**
+ * Format ngày tháng
+ * @param {string} dateString - Chuỗi ngày tháng (ISO)
+ * @returns {string} - Chuỗi ngày tháng đã format (dd/mm/yyyy)
+ */
+export function formatNgay(dateString) {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  if (isNaN(date.getTime())) return ''
+
+  const day = date.getDate().toString().padStart(2, '0')
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const year = date.getFullYear()
+
+  return `${day}/${month}/${year}`
+}
+
+/**
+ * Kiểm tra token (giả lập)
+ * @returns {boolean} - true nếu có token (đã đăng nhập)
+ */
+export function checkToken() {
+  const user = docNguoiDung()
+  return !!user
+}
+
+/**
+ * Tạo mã đơn hàng ngẫu nhiên
+ * @returns {string} - Mã đơn hàng
+ */
+export function taoMaDon() {
+  return 'DH' + Math.floor(Math.random() * 1000000).toString().padStart(6, '0')
+}
+
+/**
+ * Alias cho dinhDangTien
+ */
+export const formatTienTe = dinhDangTien
+export const luuUser = luuNguoiDung
+export const xoaUser = xoaNguoiDung
+export const layGioHang = docGioHang
 

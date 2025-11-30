@@ -92,7 +92,7 @@ function TrangChu({ themVaoGioHang, chuyenTrang }) {
 
             <div className="col-md-3">
               <label className="form-label fw-bold">
-                <i className="fas fa-dollar-sign me-2"></i>Giá từ
+                <i className=""></i>Giá từ
               </label>
               <input
                 data-testid="input-gia-min"

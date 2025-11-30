@@ -219,9 +219,11 @@ function ThanhToan({ gioHang }) {
                 borderRadius: '4px'
               }}
             >
-              <option value="tietKiem">Tiết kiệm (20,000 đ)</option>
-              <option value="chuan">Chuẩn (30,000 đ)</option>
-              <option value="nhanh">Nhanh (50,000 đ)</option>
+              <option value="tietKiem">Tiết kiệm (17,000 đ)</option>
+              <option value="chuan">Chuẩn (36,000 đ)</option>
+              <option value="nhanh">Nhanh (40,000 đ)</option>
+              <option value="noiThanh">Nội thành (20,000 đ)</option>
+              <option value="ngoaiThanh">Ngoại thành (30,000 đ)</option>
             </select>
           </div>
 
@@ -253,7 +255,7 @@ function ThanhToan({ gioHang }) {
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
         }}>
           <h2 data-testid="tieu-de-tom-tat-thanh-toan" style={{ marginBottom: '1rem' }}>Tóm tắt đơn hàng</h2>
-          
+
           <div style={{ marginBottom: '1rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
               <span>Tổng tiền:</span>
