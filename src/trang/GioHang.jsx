@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { tinhTongTien, dinhDangTien } from '../tien_ich/tinh_toan'
 
-function GioHang({ gioHang, capNhatGioHang, xoaKhoiGioHang, chuyenTrang }) {
+function GioHang({ gioHang, capNhatGioHang, xoaKhoiGioHang, xoaHetGioHang, chuyenTrang }) {
   const [maGiamGia, setMaGiamGia] = useState('')
   const ketQuaTinhToan = tinhTongTien(gioHang, maGiamGia)
 
@@ -31,9 +31,27 @@ function GioHang({ gioHang, capNhatGioHang, xoaKhoiGioHang, chuyenTrang }) {
 
   return (
     <div data-testid="trang-gio-hang" style={{ padding: '2rem', maxWidth: '1000px', margin: '0 auto' }}>
-      <h1 data-testid="tieu-de-gio-hang" style={{ marginBottom: '2rem', color: '#2d5016' }}>
-        Giỏ hàng của bạn
-      </h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+        <h1 data-testid="tieu-de-gio-hang" style={{ color: '#2d5016', margin: 0 }}>
+          Giỏ hàng của bạn
+        </h1>
+        {gioHang.length > 0 && (
+          <button
+            data-testid="nut-xoa-tat-ca"
+            onClick={xoaHetGioHang}
+            style={{
+              padding: '0.5rem 1rem',
+              background: '#dc3545',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Xóa tất cả
+          </button>
+        )}
+      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem' }}>
         {/* Danh sách sản phẩm */}
@@ -58,7 +76,13 @@ function GioHang({ gioHang, capNhatGioHang, xoaKhoiGioHang, chuyenTrang }) {
                 style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '4px' }}
               />
               <div style={{ flex: 1 }}>
-                <h3 data-testid={`ten-san-pham-gio-hang-${sanPham.id}`}>{sanPham.ten}</h3>
+                <h3
+                  data-testid={`ten-san-pham-gio-hang-${sanPham.id}`}
+                  onClick={() => chuyenTrang('chiTietSanPham', sanPham.id)}
+                  style={{ cursor: 'pointer', color: '#2d5016' }}
+                >
+                  {sanPham.ten}
+                </h3>
                 <p data-testid={`gia-san-pham-gio-hang-${sanPham.id}`}>
                   {dinhDangTien(sanPham.gia)} / sản phẩm
                 </p>
@@ -71,7 +95,11 @@ function GioHang({ gioHang, capNhatGioHang, xoaKhoiGioHang, chuyenTrang }) {
                     value={sanPham.soLuong}
                     onChange={(e) => capNhatGioHang(sanPham.id, parseInt(e.target.value) || 1)}
                     style={{ width: '60px', padding: '0.25rem' }}
+                    max={sanPham.tonKho}
                   />
+                  <span style={{ fontSize: '0.8rem', color: '#666' }}>
+                    (Còn: {sanPham.tonKho})
+                  </span>
                   <button
                     data-testid={`nut-xoa-san-pham-${sanPham.id}`}
                     onClick={() => xoaKhoiGioHang(sanPham.id)}
@@ -101,13 +129,13 @@ function GioHang({ gioHang, capNhatGioHang, xoaKhoiGioHang, chuyenTrang }) {
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
         }}>
           <h2 data-testid="tieu-de-tom-tat" style={{ marginBottom: '1rem' }}>Tóm tắt đơn hàng</h2>
-          
+
           <div style={{ marginBottom: '1rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
               <span>Tổng tiền:</span>
               <span data-testid="tong-tien">{dinhDangTien(ketQuaTinhToan.tongTien)}</span>
             </div>
-            
+
             <div style={{ marginBottom: '1rem' }}>
               <label>Mã giảm giá:</label>
               <input

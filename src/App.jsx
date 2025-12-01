@@ -15,7 +15,10 @@ import { docNguoiDung, xoaNguoiDung } from './tien_ich/luu_tru'
 function App() {
   const navigate = useNavigate()
   const location = useLocation()
-  const [gioHang, setGioHang] = useState([])
+  const [gioHang, setGioHang] = useState(() => {
+    const savedCart = docGioHang()
+    return savedCart || []
+  })
   const [nguoiDung, setNguoiDung] = useState(null)
   const [showDropdown, setShowDropdown] = useState(false)
 
@@ -24,6 +27,23 @@ function App() {
     const nguoiDungHienTai = docNguoiDung()
     setNguoiDung(nguoiDungHienTai)
   }, [location.pathname])
+
+  // Lưu giỏ hàng vào LocalStorage khi thay đổi
+  useEffect(() => {
+    luuGioHang(gioHang)
+  }, [gioHang])
+
+  // Sync giỏ hàng giữa các tab
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'greenmart_gio_hang') {
+        const newCart = docGioHang()
+        setGioHang(newCart)
+      }
+    }
+    window.addEventListener('storage', handleStorageChange)
+    return () => window.removeEventListener('storage', handleStorageChange)
+  }, [])
 
   const handleDangXuat = () => {
     xoaNguoiDung()
@@ -61,14 +81,25 @@ function App() {
     setGioHang(prev => {
       const tonTai = prev.find(item => item.id === sanPham.id)
       if (tonTai) {
+        // Kiểm tra tồn kho
+        if (tonTai.soLuong + 1 > sanPham.tonKho) {
+          alert(`Sản phẩm ${sanPham.ten} chỉ còn ${sanPham.tonKho} sản phẩm!`)
+          return prev
+        }
         return prev.map(item =>
           item.id === sanPham.id
             ? { ...item, soLuong: item.soLuong + 1 }
             : item
         )
       }
+      // Kiểm tra tồn kho cho sản phẩm mới
+      if (1 > sanPham.tonKho) {
+        alert(`Sản phẩm ${sanPham.ten} đã hết hàng!`)
+        return prev
+      }
       return [...prev, { ...sanPham, soLuong: 1 }]
     })
+    alert('Đã thêm vào giỏ hàng!')
   }
 
   const capNhatGioHang = (id, soLuong) => {
@@ -76,15 +107,27 @@ function App() {
       xoaKhoiGioHang(id)
       return
     }
-    setGioHang(prev =>
-      prev.map(item =>
+
+    setGioHang(prev => {
+      const item = prev.find(i => i.id === id)
+      if (item && soLuong > item.tonKho) {
+        alert(`Sản phẩm ${item.ten} chỉ còn ${item.tonKho} sản phẩm!`)
+        return prev.map(i => i.id === id ? { ...i, soLuong: item.tonKho } : i)
+      }
+      return prev.map(item =>
         item.id === id ? { ...item, soLuong } : item
       )
-    )
+    })
   }
 
   const xoaKhoiGioHang = (id) => {
     setGioHang(prev => prev.filter(item => item.id !== id))
+  }
+
+  const xoaHetGioHang = () => {
+    if (window.confirm('Bạn có chắc muốn xóa tất cả sản phẩm trong giỏ hàng?')) {
+      setGioHang([])
+    }
   }
 
   return (
@@ -100,7 +143,7 @@ function App() {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav me-auto">
               <li className="nav-item">
-                <a 
+                <a
                   className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
                   href="/"
                   onClick={(e) => { e.preventDefault(); chuyenTrang('trangChu') }}
@@ -110,20 +153,20 @@ function App() {
                 </a>
               </li>
               <li className="nav-item">
-                <a 
+                <a
                   className={`nav-link ${location.pathname === '/gio-hang' ? 'active' : ''}`}
                   href="/gio-hang"
                   onClick={(e) => { e.preventDefault(); chuyenTrang('gioHang') }}
                   data-testid="nut-gio-hang"
                 >
-                  <i className="fas fa-shopping-cart me-1"></i>Giỏ Hàng 
+                  <i className="fas fa-shopping-cart me-1"></i>Giỏ Hàng
                   {gioHang.length > 0 && <span className="badge bg-danger ms-1">{gioHang.length}</span>}
                 </a>
               </li>
               {!nguoiDung ? (
                 <>
                   <li className="nav-item">
-                    <a 
+                    <a
                       className={`nav-link ${location.pathname === '/dang-nhap' ? 'active' : ''}`}
                       href="/dang-nhap"
                       onClick={(e) => { e.preventDefault(); chuyenTrang('dangNhap') }}
@@ -133,7 +176,7 @@ function App() {
                     </a>
                   </li>
                   <li className="nav-item">
-                    <a 
+                    <a
                       className={`nav-link ${location.pathname === '/dang-ky' ? 'active' : ''}`}
                       href="/dang-ky"
                       onClick={(e) => { e.preventDefault(); chuyenTrang('dangKy') }}
@@ -145,10 +188,10 @@ function App() {
                 </>
               ) : (
                 <li className="nav-item dropdown" style={{ position: 'relative' }}>
-                  <a 
+                  <a
                     className="nav-link dropdown-toggle"
                     href="#"
-                    onClick={(e) => { 
+                    onClick={(e) => {
                       e.preventDefault()
                       setShowDropdown(!showDropdown)
                     }}
@@ -158,7 +201,7 @@ function App() {
                     <i className="fas fa-user me-1"></i>{nguoiDung.hoTen || nguoiDung.email}
                   </a>
                   {showDropdown && (
-                    <div 
+                    <div
                       className="dropdown-menu show"
                       style={{
                         position: 'absolute',
@@ -173,7 +216,7 @@ function App() {
                       }}
                       data-testid="dropdown-menu-nguoi-dung"
                     >
-                      <a 
+                      <a
                         className="dropdown-item"
                         href="#"
                         onClick={(e) => {
@@ -186,7 +229,7 @@ function App() {
                       >
                         <i className="fas fa-user-circle me-2"></i>Thông Tin Cá Nhân
                       </a>
-                      <a 
+                      <a
                         className="dropdown-item"
                         href="#"
                         onClick={(e) => {
@@ -200,7 +243,7 @@ function App() {
                         <i className="fas fa-key me-2"></i>Đổi Mật Khẩu
                       </a>
                       <div className="dropdown-divider"></div>
-                      <a 
+                      <a
                         className="dropdown-item"
                         href="#"
                         onClick={(e) => {
@@ -218,7 +261,7 @@ function App() {
                 </li>
               )}
               <li className="nav-item">
-                <a 
+                <a
                   className={`nav-link ${location.pathname === '/lich-su-mua-hang' ? 'active' : ''}`}
                   href="/lich-su-mua-hang"
                   onClick={(e) => { e.preventDefault(); chuyenTrang('lichSuMuaHang') }}
@@ -230,7 +273,7 @@ function App() {
             </ul>
             <ul className="navbar-nav">
               <li className="nav-item">
-                <a 
+                <a
                   className={`nav-link text-warning ${location.pathname === '/quan-ly-test' ? 'active' : ''}`}
                   href="/quan-ly-test"
                   onClick={(e) => { e.preventDefault(); chuyenTrang('quanLyTest') }}
@@ -247,7 +290,7 @@ function App() {
       <main data-testid="noi-dung-chinh" onClick={() => setShowDropdown(false)}>
         <Routes>
           <Route path="/" element={<TrangChu themVaoGioHang={themVaoGioHang} chuyenTrang={chuyenTrang} />} />
-          <Route path="/gio-hang" element={<GioHang gioHang={gioHang} capNhatGioHang={capNhatGioHang} xoaKhoiGioHang={xoaKhoiGioHang} chuyenTrang={chuyenTrang} />} />
+          <Route path="/gio-hang" element={<GioHang gioHang={gioHang} capNhatGioHang={capNhatGioHang} xoaKhoiGioHang={xoaKhoiGioHang} xoaHetGioHang={xoaHetGioHang} chuyenTrang={chuyenTrang} />} />
           <Route path="/thanh-toan" element={<ThanhToan gioHang={gioHang} />} />
           <Route path="/dang-nhap" element={<DangNhap chuyenTrang={chuyenTrang} setNguoiDung={setNguoiDung} />} />
           <Route path="/dang-ky" element={<DangKy chuyenTrang={chuyenTrang} />} />
