@@ -235,3 +235,31 @@ export function validateForm(data) {
   return { isValid, errors }
 }
 
+/**
+ * Kiểm tra mã giảm giá có hợp lệ không
+ * @param {string} maGiamGia - Mã giảm giá cần kiểm tra
+ * @returns {Object} - { hopLe: boolean, thongBao: string }
+ */
+export function kiemTraMaGiamGia(maGiamGia) {
+  if (!maGiamGia) {
+    return {
+      hopLe: true, // Không nhập mã thì vẫn hợp lệ (không giảm giá)
+      thongBao: ''
+    }
+  }
+
+  const maGiamGiaHopLe = ['GREEN10', 'GREEN20', 'GREEN50']
+
+  if (maGiamGiaHopLe.includes(maGiamGia.toUpperCase())) {
+    return {
+      hopLe: true,
+      thongBao: 'Mã giảm giá hợp lệ'
+    }
+  }
+
+  return {
+    hopLe: false,
+    thongBao: 'Mã giảm giá không hợp lệ'
+  }
+}
+

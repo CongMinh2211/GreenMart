@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { tinhTongTien, tinhPhiVanChuyen, dinhDangTien } from '../tien_ich/tinh_toan'
-import { kiemTraEmail, kiemTraSoDienThoai, kiemTraTen } from '../tien_ich/kiem_tra_hop_le'
+import { kiemTraEmail, kiemTraSoDienThoai, kiemTraTen, kiemTraMaGiamGia } from '../tien_ich/kiem_tra_hop_le'
 import { luuDonHang, xoaGioHang } from '../tien_ich/luu_tru'
 
 function ThanhToan({ gioHang }) {
@@ -62,6 +62,15 @@ function ThanhToan({ gioHang }) {
       return
     }
 
+    // Kiểm tra mã giảm giá
+    if (maGiamGia) {
+      const ketQuaMa = kiemTraMaGiamGia(maGiamGia)
+      if (!ketQuaMa.hopLe) {
+        setLoi(prev => ({ ...prev, maGiamGia: ketQuaMa.thongBao }))
+        return
+      }
+    }
+
     const donHang = {
       thongTinGiaoHang,
       gioHang,
@@ -74,7 +83,7 @@ function ThanhToan({ gioHang }) {
     }
 
     luuDonHang(donHang)
-    xoaGioHang()
+    // xoaGioHang() // Giữ lại giỏ hàng theo yêu cầu
     setDaThanhToan(true)
   }
 
@@ -233,7 +242,12 @@ function ThanhToan({ gioHang }) {
               data-testid="input-ma-giam-gia-thanh-toan"
               type="text"
               value={maGiamGia}
-              onChange={(e) => setMaGiamGia(e.target.value)}
+              onChange={(e) => {
+                setMaGiamGia(e.target.value)
+                if (loi.maGiamGia) {
+                  setLoi(prev => ({ ...prev, maGiamGia: null }))
+                }
+              }}
               placeholder="Nhập mã giảm giá (VD: GREEN10, GREEN20, GREEN50)"
               style={{
                 width: '100%',
@@ -243,6 +257,11 @@ function ThanhToan({ gioHang }) {
                 borderRadius: '4px'
               }}
             />
+            {loi.maGiamGia && (
+              <p data-testid="loi-ma-giam-gia" style={{ color: 'red', fontSize: '0.9rem', marginTop: '0.25rem' }}>
+                {loi.maGiamGia}
+              </p>
+            )}
           </div>
         </div>
 
