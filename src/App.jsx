@@ -10,14 +10,14 @@ import ChiTietSanPham from './trang/ChiTietSanPham'
 import LichSuMuaHang from './trang/LichSuMuaHang'
 import ThongTinCaNhan from './trang/ThongTinCaNhan'
 import DoiMatKhau from './trang/DoiMatKhau'
-import { docNguoiDung, xoaNguoiDung } from './tien_ich/luu_tru'
+import { docNguoiDung, xoaNguoiDung, docGioHang, luuGioHang } from './tien_ich/luu_tru'
 
 function App() {
   const navigate = useNavigate()
   const location = useLocation()
   const [gioHang, setGioHang] = useState(() => {
     const savedCart = docGioHang()
-    return savedCart || []
+    return Array.isArray(savedCart) ? savedCart : []
   })
   const [nguoiDung, setNguoiDung] = useState(null)
   const [showDropdown, setShowDropdown] = useState(false)
@@ -160,7 +160,11 @@ function App() {
                   data-testid="nut-gio-hang"
                 >
                   <i className="fas fa-shopping-cart me-1"></i>Giỏ Hàng
-                  {gioHang.length > 0 && <span className="badge bg-danger ms-1">{gioHang.length}</span>}
+                  {gioHang.length > 0 && (
+                    <span className="badge bg-danger ms-1">
+                      {gioHang.reduce((tong, item) => tong + (item.soLuong || 0), 0)}
+                    </span>
+                  )}
                 </a>
               </li>
               {!nguoiDung ? (
