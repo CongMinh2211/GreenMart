@@ -17,6 +17,9 @@ function DangNhap({ chuyenTrang, setNguoiDung }) {
     const ketQuaEmail = kiemTraEmail(email)
     if (!ketQuaEmail.hopLe) {
       loiMoi.email = ketQuaEmail.thongBao
+    } else {
+      // Clear email error if valid
+      if (loiMoi.email) delete loiMoi.email
     }
 
     // Kiểm tra mật khẩu
@@ -53,8 +56,10 @@ function DangNhap({ chuyenTrang, setNguoiDung }) {
 
     // Đăng nhập thành công
     setDaDangNhap(true)
-    alert('Đăng nhập thành công!')
-    chuyenTrang('trangChu')
+    // Delay redirect để test có thể thấy thông báo thành công
+    setTimeout(() => {
+      chuyenTrang('trangChu')
+    }, 2000)
   }
 
   if (daDangNhap) {

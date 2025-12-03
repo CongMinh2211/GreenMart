@@ -56,68 +56,69 @@ function GioHang({ gioHang, capNhatGioHang, xoaKhoiGioHang, xoaHetGioHang, chuye
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem' }}>
         {/* Danh sách sản phẩm */}
         <div data-testid="danh-sach-san-pham-gio-hang">
-          {gioHang.map(sanPham => (
-            <div
-              key={sanPham.id}
-              data-testid={`san-pham-gio-hang-${sanPham.id}`}
-              style={{
-                background: 'white',
-                padding: '1rem',
-                borderRadius: '8px',
-                marginBottom: '1rem',
-                display: 'flex',
-                gap: '1rem',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-              }}
-            >
-              <img
-                src={sanPham.anh}
-                alt={sanPham.ten}
-                style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '4px' }}
-              />
-              <div style={{ flex: 1 }}>
-                <h3
-                  data-testid={`ten-san-pham-gio-hang-${sanPham.id}`}
-                  onClick={() => chuyenTrang('chiTietSanPham', sanPham.id)}
-                  style={{ cursor: 'pointer', color: '#2d5016' }}
+          <table className="table" style={{ background: 'white', borderRadius: '8px', overflow: 'hidden' }}>
+            <thead>
+              <tr>
+                <th>Sản phẩm</th>
+                <th>Giá</th>
+                <th>Số lượng</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              {gioHang.map(sanPham => (
+                <tr
+                  key={sanPham.id}
+                  data-testid={`san-pham-gio-hang-${sanPham.id}`}
                 >
-                  {sanPham.ten}
-                </h3>
-                <p data-testid={`gia-san-pham-gio-hang-${sanPham.id}`}>
-                  {dinhDangTien(sanPham.gia)} / sản phẩm
-                </p>
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.5rem' }}>
-                  <label>Số lượng:</label>
-                  <input
-                    data-testid={`input-so-luong-gio-hang-${sanPham.id}`}
-                    type="number"
-                    min="1"
-                    value={sanPham.soLuong}
-                    onChange={(e) => capNhatGioHang(sanPham.id, parseInt(e.target.value) || 1)}
-                    style={{ width: '60px', padding: '0.25rem' }}
-                    max={sanPham.tonKho}
-                  />
-                  <span style={{ fontSize: '0.8rem', color: '#666' }}>
-                    (Còn: {sanPham.tonKho})
-                  </span>
-                  <button
-                    data-testid={`nut-xoa-san-pham-${sanPham.id}`}
-                    onClick={() => xoaKhoiGioHang(sanPham.id)}
-                    style={{
-                      padding: '0.5rem 1rem',
-                      background: '#dc3545',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Xóa
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
+                  <td>
+                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                      <img
+                        src={sanPham.anh}
+                        alt={sanPham.ten}
+                        style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '4px' }}
+                      />
+                      <h5
+                        data-testid={`ten-san-pham-gio-hang-${sanPham.id}`}
+                        onClick={() => chuyenTrang('chiTietSanPham', sanPham.id)}
+                        style={{ cursor: 'pointer', color: '#2d5016', margin: 0 }}
+                      >
+                        {sanPham.ten}
+                      </h5>
+                    </div>
+                  </td>
+                  <td>
+                    <p data-testid={`gia-san-pham-gio-hang-${sanPham.id}`} style={{ margin: 0 }}>
+                      {dinhDangTien(sanPham.gia)} / sản phẩm
+                    </p>
+                  </td>
+                  <td>
+                    <input
+                      data-testid={`input-so-luong-gio-hang-${sanPham.id}`}
+                      type="number"
+                      min="1"
+                      value={sanPham.soLuong}
+                      onChange={(e) => capNhatGioHang(sanPham.id, parseInt(e.target.value) || 1)}
+                      style={{ width: '60px', padding: '0.25rem' }}
+                      max={sanPham.tonKho}
+                    />
+                    <small style={{ display: 'block', color: '#666', marginTop: '0.25rem' }}>
+                      Còn: {sanPham.tonKho}
+                    </small>
+                  </td>
+                  <td>
+                    <button
+                      data-testid={`nut-xoa-san-pham-${sanPham.id}`}
+                      onClick={() => xoaKhoiGioHang(sanPham.id)}
+                      className="btn btn-danger btn-sm"
+                    >
+                      Xóa
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
         {/* Tóm tắt đơn hàng */}

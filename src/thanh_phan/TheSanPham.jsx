@@ -27,7 +27,7 @@ function TheSanPham({ sanPham, themVaoGioHang, chuyenTrang }) {
   return (
     <div 
       data-testid={`the-san-pham-${sanPham.id}`}
-      className="card h-100 shadow-sm"
+      className="card product-card h-100 shadow-sm"
     >
       <div className="position-relative">
         <img 

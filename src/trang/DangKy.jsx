@@ -18,9 +18,13 @@ function DangKy({ chuyenTrang }) {
   const handleThayDoi = (truong, giaTri) => {
     setThongTin(prev => ({ ...prev, [truong]: giaTri }))
 
-    // Xóa lỗi khi người dùng nhập lại
+    // Xóa lỗi khi người dùng nhập lại (chỉ xóa nếu đã có lỗi)
     if (loi[truong]) {
-      setLoi(prev => ({ ...prev, [truong]: null }))
+      setLoi(prev => {
+        const loiMoi = { ...prev }
+        delete loiMoi[truong]
+        return loiMoi
+      })
     }
 
     // Kiểm tra độ mạnh mật khẩu khi người dùng nhập
@@ -44,6 +48,9 @@ function DangKy({ chuyenTrang }) {
     const ketQuaEmail = kiemTraEmail(thongTin.email)
     if (!ketQuaEmail.hopLe) {
       loiMoi.email = ketQuaEmail.thongBao
+    } else {
+      // Clear email error if valid
+      if (loiMoi.email) delete loiMoi.email
     }
 
     // Kiểm tra số điện thoại

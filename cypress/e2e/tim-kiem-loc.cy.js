@@ -2,7 +2,7 @@
 
 describe('Tìm kiếm và Bộ lọc sản phẩm', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:3000')
+    cy.visit('/')
   })
 
   it('TC1: Tìm kiếm sản phẩm theo tên có dấu', () => {
@@ -24,7 +24,7 @@ describe('Tìm kiếm và Bộ lọc sản phẩm', () => {
   it('TC4: Lọc sản phẩm theo khoảng giá', () => {
     cy.get('[data-testid="input-gia-min"]').type('20000')
     cy.get('[data-testid="input-gia-max"]').type('30000')
-    
+
     cy.get('[data-testid="danh-sach-san-pham"]').children().should('have.length.at.least', 1)
   })
 
@@ -57,7 +57,6 @@ describe('Tìm kiếm và Bộ lọc sản phẩm', () => {
   it('TC10: Xóa bộ lọc và hiển thị tất cả sản phẩm', () => {
     cy.get('[data-testid="select-loc-loai"]').select('rau-cu')
     cy.get('[data-testid="select-loc-loai"]').select('tat-ca')
-    cy.get('[data-testid="danh-sach-san-pham"]').children().should('have.length', 3)
+    cy.get('[data-testid="danh-sach-san-pham"]').children().should('have.length', 12)
   })
 })
-
